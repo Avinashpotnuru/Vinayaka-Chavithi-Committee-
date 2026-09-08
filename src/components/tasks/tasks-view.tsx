@@ -25,7 +25,6 @@ import {
 import { useMemo, useState } from "react"
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -55,6 +54,9 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
 import { TaskFormDialog } from "@/components/tasks/task-form-dialog"
+import { PageHeader } from "@/components/page-header"
+import { StatusPill } from "@/components/status-pill"
+import { SummaryCard } from "@/components/summary-card"
 import { memberById } from "@/lib/contributions-data"
 import { getInitials, mockMembers } from "@/lib/members-data"
 import {
@@ -66,13 +68,6 @@ import {
   type TaskStatus,
 } from "@/lib/tasks-data"
 import { cn } from "@/lib/utils"
-
-const statusDot: Record<TaskStatus, string> = {
-  "To Do": "bg-muted-foreground",
-  "In Progress": "bg-chart-2",
-  Done: "bg-emerald-500",
-  Overdue: "bg-chart-4",
-}
 
 const statusStyles: Record<TaskStatus, string> = {
   "To Do": "bg-muted text-muted-foreground border-border",
@@ -231,12 +226,9 @@ export function TasksView({ initialTasks }: { initialTasks: Task[] }) {
         cell: ({ getValue }) => {
           const status = getValue() as TaskStatus
           return (
-            <Badge variant="outline" className={statusStyles[status]}>
-              <span
-                className={cn("size-1.5 rounded-full", statusDot[status])}
-              />
+            <StatusPill className={statusStyles[status]}>
               {status}
-            </Badge>
+            </StatusPill>
           )
         },
       }) as LegacyColumnDef<Task, unknown>,
@@ -363,60 +355,41 @@ export function TasksView({ initialTasks }: { initialTasks: Task[] }) {
           {error}
         </div>
       ) : null}
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div className="space-y-1">
-          <h1 className="text-2xl font-semibold tracking-tight md:text-3xl">
-            Tasks
-          </h1>
-          <p className="text-sm text-muted-foreground">
-            Plan and track festival preparation tasks across the committee.
-          </p>
-        </div>
-        <Button onClick={() => setFormOpen(true)}>
-          <Plus className="size-4" />
-          Add Task
-        </Button>
-      </div>
+      <PageHeader
+        title="Tasks"
+        description="Plan and track festival preparation tasks across the committee."
+        action={
+          <Button onClick={() => setFormOpen(true)}>
+            <Plus className="size-4" />
+            Add Task
+          </Button>
+        }
+      />
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Card className="flex items-center gap-4 p-5">
-          <div className="flex size-11 shrink-0 items-center justify-center rounded-lg bg-chart-1/10 text-chart-1">
-            <ListTodo className="size-5" />
-          </div>
-          <div>
-            <p className="text-2xl font-semibold leading-none">{tasks.length}</p>
-            <p className="mt-1 text-sm text-muted-foreground">Total Tasks</p>
-          </div>
-        </Card>
-        <Card className="flex items-center gap-4 p-5">
-          <div className="flex size-11 shrink-0 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
-            <CheckCircle2 className="size-5" />
-          </div>
-          <div>
-            <p className="text-2xl font-semibold leading-none">{doneCount}</p>
-            <p className="mt-1 text-sm text-muted-foreground">Completed</p>
-          </div>
-        </Card>
-        <Card className="flex items-center gap-4 p-5">
-          <div className="flex size-11 shrink-0 items-center justify-center rounded-lg bg-chart-2/15 text-chart-2">
-            <Clock className="size-5" />
-          </div>
-          <div>
-            <p className="text-2xl font-semibold leading-none">
-              {inProgressCount}
-            </p>
-            <p className="mt-1 text-sm text-muted-foreground">In Progress</p>
-          </div>
-        </Card>
-        <Card className="flex items-center gap-4 p-5">
-          <div className="flex size-11 shrink-0 items-center justify-center rounded-lg bg-chart-4/10 text-chart-4">
-            <AlertTriangle className="size-5" />
-          </div>
-          <div>
-            <p className="text-2xl font-semibold leading-none">{overdueCount}</p>
-            <p className="mt-1 text-sm text-muted-foreground">Overdue</p>
-          </div>
-        </Card>
+        <SummaryCard
+          label="Total Tasks"
+          value={tasks.length.toLocaleString("en-IN")}
+          icon={ListTodo}
+        />
+        <SummaryCard
+          label="Completed"
+          value={doneCount.toLocaleString("en-IN")}
+          icon={CheckCircle2}
+          iconClass="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
+        />
+        <SummaryCard
+          label="In Progress"
+          value={inProgressCount.toLocaleString("en-IN")}
+          icon={Clock}
+          iconClass="bg-chart-2/15 text-chart-2"
+        />
+        <SummaryCard
+          label="Overdue"
+          value={overdueCount.toLocaleString("en-IN")}
+          icon={AlertTriangle}
+          iconClass="bg-chart-4/10 text-chart-4"
+        />
       </div>
 
       <Card>

@@ -1,7 +1,6 @@
 import Link from "next/link"
 import { ArrowRight } from "lucide-react"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
 import {
   Card,
   CardContent,
@@ -16,6 +15,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import { StatusPill } from "@/components/status-pill"
 import {
   type Contribution,
   formatCurrency,
@@ -90,9 +90,9 @@ export function RecentContributions({
                   </div>
                 </TableCell>
                 <TableCell className="hidden sm:table-cell">
-                  <Badge variant="outline" className={cn("border-transparent", typeClass(row.type))}>
+                  <StatusPill className={cn(typeClass(row.type))}>
                     {row.type}
-                  </Badge>
+                  </StatusPill>
                 </TableCell>
                 <TableCell className="hidden text-muted-foreground md:table-cell">
                   {row.date}
@@ -101,17 +101,15 @@ export function RecentContributions({
                   {formatCurrency(row.amount)}
                 </TableCell>
                 <TableCell className="hidden text-right sm:table-cell">
-                  <Badge
-                    variant="outline"
-                    className={cn(
-                      "border-transparent",
+                  <StatusPill
+                    className={
                       row.status === "Paid"
                         ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
                         : "bg-amber-500/10 text-amber-600 dark:text-amber-400"
-                    )}
+                    }
                   >
                     {row.status}
-                  </Badge>
+                  </StatusPill>
                 </TableCell>
               </TableRow>
             ))}

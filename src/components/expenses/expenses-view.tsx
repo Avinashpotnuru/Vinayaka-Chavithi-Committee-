@@ -24,7 +24,6 @@ import {
 } from "lucide-react"
 import { useMemo, useState } from "react"
 
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -54,6 +53,9 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
 import { ExpenseFormDialog } from "@/components/expenses/expense-form-dialog"
+import { PageHeader } from "@/components/page-header"
+import { StatusPill } from "@/components/status-pill"
+import { SummaryCard } from "@/components/summary-card"
 import { formatCurrency } from "@/lib/dashboard-data"
 import { formatDate, type PaymentMode } from "@/lib/contributions-data"
 import {
@@ -171,9 +173,9 @@ export function ExpensesView({ initialExpenses }: { initialExpenses: Expense[] }
         cell: ({ getValue }) => {
           const category = getValue() as ExpenseCategory
           return (
-            <Badge variant="outline" className={categoryStyles[category]}>
+            <StatusPill className={categoryStyles[category]}>
               {category}
-            </Badge>
+            </StatusPill>
           )
         },
       }) as LegacyColumnDef<Expense, unknown>,
@@ -201,16 +203,7 @@ export function ExpensesView({ initialExpenses }: { initialExpenses: Expense[] }
         ),
         cell: ({ getValue }) => {
           const mode = getValue() as PaymentMode
-          return (
-            <span
-              className={cn(
-                "inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium",
-                modeStyles[mode],
-              )}
-            >
-              {mode}
-            </span>
-          )
+          return <StatusPill className={modeStyles[mode]}>{mode}</StatusPill>
         },
       }) as LegacyColumnDef<Expense, unknown>,
       columnHelper.accessor("notes", {
@@ -364,68 +357,42 @@ export function ExpensesView({ initialExpenses }: { initialExpenses: Expense[] }
           {error}
         </div>
       ) : null}
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div className="space-y-1">
-          <h1 className="text-2xl font-semibold tracking-tight md:text-3xl">
-            Expenses
-          </h1>
-          <p className="text-sm text-muted-foreground">
-            Track festival and committee spending against the budget.
-          </p>
-        </div>
-        <Button onClick={() => setFormOpen(true)}>
-          <Plus className="size-4" />
-          Add Expense
-        </Button>
-      </div>
+      <PageHeader
+        title="Expenses"
+        description="Track festival and committee spending against the budget."
+        action={
+          <Button onClick={() => setFormOpen(true)}>
+            <Plus className="size-4" />
+            Add Expense
+          </Button>
+        }
+      />
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Card className="flex items-center gap-4 p-5">
-          <div className="flex size-11 shrink-0 items-center justify-center rounded-lg bg-chart-2/15 text-chart-2">
-            <IndianRupee className="size-5" />
-          </div>
-          <div>
-            <p className="text-2xl font-semibold leading-none">
-              {formatCurrency(totalSpent)}
-            </p>
-            <p className="mt-1 text-sm text-muted-foreground">Total Spent</p>
-          </div>
-        </Card>
-        <Card className="flex items-center gap-4 p-5">
-          <div className="flex size-11 shrink-0 items-center justify-center rounded-lg bg-chart-1/10 text-chart-1">
-            <ReceiptText className="size-5" />
-          </div>
-          <div>
-            <p className="text-2xl font-semibold leading-none">
-              {expenses.length}
-            </p>
-            <p className="mt-1 text-sm text-muted-foreground">Total Expenses</p>
-          </div>
-        </Card>
-        <Card className="flex items-center gap-4 p-5">
-          <div className="flex size-11 shrink-0 items-center justify-center rounded-lg bg-chart-3/10 text-chart-3">
-            <PiggyBank className="size-5" />
-          </div>
-          <div>
-            <p className="truncate text-lg font-semibold leading-none">
-              {topCategory?.name ?? "—"}
-            </p>
-            <p className="mt-1 text-sm text-muted-foreground">
-              Top Category · {formatCurrency(topCategory?.total ?? 0)}
-            </p>
-          </div>
-        </Card>
-        <Card className="flex items-center gap-4 p-5">
-          <div className="flex size-11 shrink-0 items-center justify-center rounded-lg bg-chart-5/10 text-chart-5">
-            <Wallet className="size-5" />
-          </div>
-          <div>
-            <p className="text-2xl font-semibold leading-none">
-              {formatCurrency(averageExpense)}
-            </p>
-            <p className="mt-1 text-sm text-muted-foreground">Average Expense</p>
-          </div>
-        </Card>
+        <SummaryCard
+          label="Total Spent"
+          value={formatCurrency(totalSpent)}
+          icon={IndianRupee}
+          iconClass="bg-chart-2/15 text-chart-2"
+        />
+        <SummaryCard
+          label="Total Expenses"
+          value={expenses.length.toLocaleString("en-IN")}
+          icon={ReceiptText}
+          iconClass="bg-chart-1/10 text-chart-1"
+        />
+        <SummaryCard
+          label={`Top Category · ${formatCurrency(topCategory?.total ?? 0)}`}
+          value={topCategory?.name ?? "—"}
+          icon={PiggyBank}
+          iconClass="bg-chart-3/10 text-chart-3"
+        />
+        <SummaryCard
+          label="Average Expense"
+          value={formatCurrency(averageExpense)}
+          icon={Wallet}
+          iconClass="bg-chart-5/10 text-chart-5"
+        />
       </div>
 
       <Card>

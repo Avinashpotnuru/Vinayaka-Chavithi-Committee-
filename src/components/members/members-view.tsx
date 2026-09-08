@@ -25,7 +25,6 @@ import {
 import { useMemo, useState } from "react"
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -55,6 +54,9 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
 import { MemberFormDialog } from "@/components/members/member-form-dialog"
+import { PageHeader } from "@/components/page-header"
+import { StatusPill } from "@/components/status-pill"
+import { SummaryCard } from "@/components/summary-card"
 import {
   formatMobile,
   getInitials,
@@ -179,11 +181,7 @@ export function MembersView({ initialMembers }: { initialMembers: Member[] }) {
         header: ({ column }) => <SortableHeader column={column} label="Role" />,
         cell: ({ getValue }) => {
           const role = getValue() as MemberRole
-          return (
-            <Badge variant="outline" className={roleStyles[role]}>
-              {role}
-            </Badge>
-          )
+          return <StatusPill className={roleStyles[role]}>{role}</StatusPill>
         },
       }) as LegacyColumnDef<Member, unknown>,
       columnHelper.accessor("status", {
@@ -193,9 +191,7 @@ export function MembersView({ initialMembers }: { initialMembers: Member[] }) {
         cell: ({ getValue }) => {
           const status = getValue() as MemberStatus
           return (
-            <Badge variant="outline" className={statusStyles[status]}>
-              {status}
-            </Badge>
+            <StatusPill className={statusStyles[status]}>{status}</StatusPill>
           )
         },
       }) as LegacyColumnDef<Member, unknown>,
@@ -318,50 +314,35 @@ export function MembersView({ initialMembers }: { initialMembers: Member[] }) {
           {error}
         </div>
       ) : null}
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div className="space-y-1">
-          <h1 className="text-2xl font-semibold tracking-tight md:text-3xl">
-            Members
-          </h1>
-          <p className="text-sm text-muted-foreground">
-            Manage household members, office bearers and volunteers of the
-            committee.
-          </p>
-        </div>
-        <Button onClick={() => setDialogOpen(true)}>
-          <Plus className="size-4" />
-          Add Member
-        </Button>
-      </div>
+      <PageHeader
+        title="Members"
+        description="Manage household members, office bearers and volunteers of the committee."
+        action={
+          <Button onClick={() => setDialogOpen(true)}>
+            <Plus className="size-4" />
+            Add Member
+          </Button>
+        }
+      />
 
       <div className="grid gap-4 sm:grid-cols-3">
-        <Card className="flex items-center gap-4 p-5">
-          <div className="flex size-11 shrink-0 items-center justify-center rounded-lg bg-chart-1/10 text-chart-1">
-            <Users className="size-5" />
-          </div>
-          <div>
-            <p className="text-2xl font-semibold leading-none">{members.length}</p>
-            <p className="mt-1 text-sm text-muted-foreground">Total Members</p>
-          </div>
-        </Card>
-        <Card className="flex items-center gap-4 p-5">
-          <div className="flex size-11 shrink-0 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
-            <UserCheck className="size-5" />
-          </div>
-          <div>
-            <p className="text-2xl font-semibold leading-none">{activeCount}</p>
-            <p className="mt-1 text-sm text-muted-foreground">Active Members</p>
-          </div>
-        </Card>
-        <Card className="flex items-center gap-4 p-5">
-          <div className="flex size-11 shrink-0 items-center justify-center rounded-lg bg-amber-500/10 text-amber-600 dark:text-amber-400">
-            <UserPlus className="size-5" />
-          </div>
-          <div>
-            <p className="text-2xl font-semibold leading-none">{pendingCount}</p>
-            <p className="mt-1 text-sm text-muted-foreground">Pending Approval</p>
-          </div>
-        </Card>
+        <SummaryCard
+          label="Total Members"
+          value={members.length.toLocaleString("en-IN")}
+          icon={Users}
+        />
+        <SummaryCard
+          label="Active Members"
+          value={activeCount.toLocaleString("en-IN")}
+          icon={UserCheck}
+          iconClass="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
+        />
+        <SummaryCard
+          label="Pending Approval"
+          value={pendingCount.toLocaleString("en-IN")}
+          icon={UserPlus}
+          iconClass="bg-amber-500/10 text-amber-600 dark:text-amber-400"
+        />
       </div>
 
       <Card>

@@ -35,6 +35,7 @@ export type TopContributor = {
 export const festival = {
   name: "Vinayaka Chavithi",
   date: "14 Sep 2026",
+  target: "2026-09-14T00:00:00",
   daysLeft: 6,
 }
 

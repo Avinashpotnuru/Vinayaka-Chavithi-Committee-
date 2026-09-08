@@ -1,5 +1,6 @@
 import { FileDown, IndianRupee, PiggyBank, Plus, ReceiptText, Users } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { PageHeader } from "@/components/page-header"
 import { FestivalBanner } from "@/components/dashboard/festival-banner"
 import { KpiCard } from "@/components/dashboard/kpi-card"
 import {
@@ -17,24 +18,22 @@ export default async function Page() {
 
   return (
     <div className="flex flex-1 flex-col gap-6 p-4 md:p-8">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="space-y-1">
-          <h1 className="text-2xl font-semibold tracking-tight">Dashboard</h1>
-          <p className="text-sm text-muted-foreground">
-            Vinayaka Chavithi Committee &middot; Tuesday, 8 Sep 2026
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm">
-            <FileDown className="size-4" />
-            Export
-          </Button>
-          <Button size="sm">
-            <Plus className="size-4" />
-            Add Contribution
-          </Button>
-        </div>
-      </div>
+      <PageHeader
+        title="Dashboard"
+        description="Vinayaka Chavithi Committee &middot; Tuesday, 8 Sep 2026"
+        action={
+          <div className="flex items-center gap-2">
+            <Button variant="outline" size="sm">
+              <FileDown className="size-4" />
+              Export
+            </Button>
+            <Button size="sm">
+              <Plus className="size-4" />
+              Add Contribution
+            </Button>
+          </div>
+        }
+      />
 
       <FestivalBanner />
 

@@ -24,7 +24,6 @@ import {
 } from "lucide-react"
 import { useMemo, useState } from "react"
 
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -57,6 +56,9 @@ import {
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { ContributionFormDialog } from "@/components/contributions/contribution-form-dialog"
 import { RecordPaymentDialog } from "@/components/contributions/record-payment-dialog"
+import { PageHeader } from "@/components/page-header"
+import { StatusPill } from "@/components/status-pill"
+import { SummaryCard } from "@/components/summary-card"
 import { formatCurrency } from "@/lib/dashboard-data"
 import {
   contributionStatuses,
@@ -238,16 +240,7 @@ export function ContributionsView({
         cell: ({ row }) => {
           const mode = row.original.paymentMode
           if (!mode) return <span className="text-muted-foreground">—</span>
-          return (
-            <span
-              className={cn(
-                "inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium",
-                modeStyles[mode],
-              )}
-            >
-              {mode}
-            </span>
-          )
+          return <StatusPill className={modeStyles[mode]}>{mode}</StatusPill>
         },
       }) as LegacyColumnDef<Contribution, unknown>,
       columnHelper.accessor((row) => row.paymentDate ?? "", {
@@ -268,9 +261,7 @@ export function ContributionsView({
         cell: ({ getValue }) => {
           const status = getValue() as ContributionStatus
           return (
-            <Badge variant="outline" className={statusStyles[status]}>
-              {status}
-            </Badge>
+            <StatusPill className={statusStyles[status]}>{status}</StatusPill>
           )
         },
       }) as LegacyColumnDef<Contribution, unknown>,
@@ -466,61 +457,42 @@ export function ContributionsView({
           {error}
         </div>
       ) : null}
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div className="space-y-1">
-          <h1 className="text-2xl font-semibold tracking-tight md:text-3xl">
-            Contributions
-          </h1>
-          <p className="text-sm text-muted-foreground">
-            Track expected and received contributions from committee members.
-          </p>
-        </div>
-        <Button onClick={() => setFormOpen(true)}>
-          <Plus className="size-4" />
-          Add Contribution
-        </Button>
-      </div>
+      <PageHeader
+        title="Contributions"
+        description="Track expected and received contributions from committee members."
+        action={
+          <Button onClick={() => setFormOpen(true)}>
+            <Plus className="size-4" />
+            Add Contribution
+          </Button>
+        }
+      />
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Card className="flex items-center gap-4 p-5">
-          <div className="flex size-11 shrink-0 items-center justify-center rounded-lg bg-chart-2/15 text-chart-2">
-            <IndianRupee className="size-5" />
-          </div>
-          <div>
-            <p className="text-2xl font-semibold leading-none">
-              {formatCurrency(totalExpected)}
-            </p>
-            <p className="mt-1 text-sm text-muted-foreground">Total Expected</p>
-          </div>
-        </Card>
-        <Card className="flex items-center gap-4 p-5">
-          <div className="flex size-11 shrink-0 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
-            <HandCoins className="size-5" />
-          </div>
-          <div>
-            <p className="text-2xl font-semibold leading-none">
-              {formatCurrency(totalPaid)}
-            </p>
-            <p className="mt-1 text-sm text-muted-foreground">Collected</p>
-          </div>
-        </Card>
-        <Card className="flex items-center gap-4 p-5">
-          <div className="flex size-11 shrink-0 items-center justify-center rounded-lg bg-amber-500/10 text-amber-600 dark:text-amber-400">
-            <Wallet className="size-5" />
-          </div>
-          <div>
-            <p className="text-2xl font-semibold leading-none">
-              {formatCurrency(outstanding)}
-            </p>
-            <p className="mt-1 text-sm text-muted-foreground">Outstanding</p>
-          </div>
-        </Card>
+        <SummaryCard
+          label="Total Expected"
+          value={formatCurrency(totalExpected)}
+          icon={IndianRupee}
+          iconClass="bg-chart-2/15 text-chart-2"
+        />
+        <SummaryCard
+          label="Collected"
+          value={formatCurrency(totalPaid)}
+          icon={HandCoins}
+          iconClass="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
+        />
+        <SummaryCard
+          label="Outstanding"
+          value={formatCurrency(outstanding)}
+          icon={Wallet}
+          iconClass="bg-amber-500/10 text-amber-600 dark:text-amber-400"
+        />
         <Card className="flex items-center gap-4 p-5">
           <div className="flex size-11 shrink-0 items-center justify-center rounded-lg bg-chart-1/10 text-chart-1">
             <BadgeCheck className="size-5" />
           </div>
           <div className="flex-1">
-            <p className="text-2xl font-semibold leading-none">
+            <p className="font-heading text-2xl font-semibold leading-none tabular-nums">
               {collectionRate}%
             </p>
             <p className="mt-1 text-sm text-muted-foreground">Collection Rate</p>

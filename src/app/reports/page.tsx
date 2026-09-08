@@ -1,7 +1,8 @@
 import { CheckCircle2, IndianRupee, PiggyBank, Wallet } from "lucide-react"
 
-import { Card } from "@/components/ui/card"
 import { ContributionBreakdown } from "@/components/dashboard/charts"
+import { PageHeader } from "@/components/page-header"
+import { SummaryCard } from "@/components/summary-card"
 import { BiggestExpenses } from "@/components/reports/biggest-expenses"
 import { ExpenseCategoryBreakdown } from "@/components/reports/expense-categories"
 import { FinancialOverviewChart } from "@/components/reports/financial-overview"
@@ -25,68 +26,47 @@ export default async function ReportsPage() {
   const summary = [
     {
       label: "Total Contributions",
-      value: data.totalContributions,
+      value: formatCurrency(data.totalContributions),
       icon: IndianRupee,
       iconClass: "bg-chart-2/15 text-chart-2",
     },
     {
       label: "Total Expenses",
-      value: data.totalExpenses,
+      value: formatCurrency(data.totalExpenses),
       icon: Wallet,
       iconClass: "bg-chart-3/10 text-chart-3",
     },
     {
       label: "Available Balance",
-      value: data.availableBalance,
+      value: formatCurrency(data.availableBalance),
       icon: PiggyBank,
       iconClass: "bg-chart-1/10 text-chart-1",
     },
     {
       label: "Expense-to-Fund Ratio",
-      value: ratio,
+      value: `${ratio}%`,
       icon: CheckCircle2,
       iconClass: "bg-chart-4/10 text-chart-4",
-      suffix: "%",
     },
   ]
 
   return (
     <div className="flex flex-1 flex-col gap-6 p-4 md:p-8">
-      <div className="space-y-1">
-        <h1 className="text-2xl font-semibold tracking-tight md:text-3xl">
-          Reports
-        </h1>
-        <p className="text-sm text-muted-foreground">
-          A financial snapshot of the committee fund, FY 2026-27.
-        </p>
-      </div>
+      <PageHeader
+        title="Reports"
+        description="A financial snapshot of the committee fund, FY 2026-27."
+      />
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {summary.map((item) => {
-          const Icon = item.icon
-          return (
-            <Card
-              key={item.label}
-              className="flex items-center gap-4 p-5"
-            >
-              <div
-                className={`flex size-11 shrink-0 items-center justify-center rounded-lg ${item.iconClass}`}
-              >
-                <Icon className="size-5" />
-              </div>
-              <div>
-                <p className="text-2xl font-semibold leading-none tabular-nums">
-                  {item.suffix
-                    ? `${item.value}${item.suffix}`
-                    : formatCurrency(item.value)}
-                </p>
-                <p className="mt-1 text-sm text-muted-foreground">
-                  {item.label}
-                </p>
-              </div>
-            </Card>
-          )
-        })}
+        {summary.map((item) => (
+          <SummaryCard
+            key={item.label}
+            label={item.label}
+            value={item.value}
+            icon={item.icon}
+            iconClass={item.iconClass}
+          />
+        ))}
       </div>
 
       <div className="grid gap-6 lg:grid-cols-3">

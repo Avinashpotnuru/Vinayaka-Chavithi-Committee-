@@ -1,36 +1,83 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Vinayaka Chavithi Committee
+
+A management app for the Vinayaka Chavithi festival committee. Tracks members,
+contributions, and expenses, with a live dashboard and reports backed by
+MongoDB Atlas.
+
+## Tech Stack
+
+- [Next.js 16](https://nextjs.org) (App Router, server components)
+- React 19, TypeScript
+- Tailwind CSS v4 + [shadcn/ui](https://ui.shadcn.com)
+- [MongoDB Atlas](https://www.mongodb.com/atlas) (official `mongodb` driver)
+- zod (validation), react-hook-form (forms), @tanstack/react-table (tables)
+
+## Features
+
+- **Members** — add, edit, delete, and search members.
+- **Contributions** — record contributions per member with payment mode/status.
+- **Expenses** — track festival expenses by category.
+- **Tasks** — manage assigned tasks and status.
+- **Dashboard** — live KPIs (members, contributions, expenses, balance),
+  monthly trend chart, contribution breakdown, recent & top contributors.
+- **Reports** — financial overview, expense-by-category breakdown, biggest
+  expenses.
+- Responsive layout, server-side rendered data, dynamic API routes with
+  zod validation.
 
 ## Getting Started
 
-First, run the development server:
+### 1. Install dependencies
+
+```bash
+npm install
+```
+
+### 2. Configure MongoDB
+
+Create a `.env.local` file in the project root:
+
+```env
+MONGODB_URI=mongodb://...
+MONGODB_DB=vinayaka-committee
+```
+
+`MONGODB_DB` is optional and defaults to `vinayaka-committee`.
+
+> If the driver's SRV lookup fails in your environment, use the Atlas **direct
+> connection** string (host list + `ssl=true&replicaSet=<cluster>`), which the
+> app supports as-is.
+
+On first use, each collection is automatically seeded with sample data when it
+is empty (see the services under `src/lib/services`).
+
+### 3. Run the dev server
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Scripts
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run dev      # development server
+npm run build    # production build
+npm run start    # serve the production build
+npm run lint     # run ESLint
+```
 
-## Learn More
+## Project Structure
 
-To learn more about Next.js, take a look at the following resources:
+```
+src/app/            # routes: /, /members, /contributions, /expenses, /tasks, /reports + /api/*
+src/components/     # shadcn/ui components + feature views (dashboard, reports, etc.)
+src/lib/            # mongodb client, services, zod schemas, and reporting aggregations
+src/hooks/          # shared client hooks
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Data access lives in `src/lib/services/<module>.ts` (server-only).
+- `src/lib/reporting.ts` computes dashboard/report aggregates from live data.
+- API routes (`src/app/api/<module>/`) expose CRUD; client views mutate via
+  `fetch`.
